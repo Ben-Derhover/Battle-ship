@@ -11,14 +11,58 @@ public class Main {
     private static String[][] board = new String[ROW][COL];
 
     public static void main(String[] args) {
-        ClearBoard();
+        Scanner in = new Scanner (System.in);
+        boolean done = false;
+        boolean gameOver = false;
+        boolean finshMove = false;
 
-        placeShip(1);
-        placeShip(2);
-        placeShip(3);
-        placeShip(4);
-        display();
+        do {
+            //starting the game verables
+            boolean hit;
+            int missCount = 0;
+            int Strike = 0;
+            ClearBoard();
+            do {
+                placeShip(1);
+                placeShip(2);
+                placeShip(3);
+                placeShip(4);
+                display();
 
+                //starting gameplay loop
+                do {
+                    hit = playerMove();
+                    System.out.println(hit);
+
+                    if (hit == false){
+                        missCount ++;
+                        if (missCount == 5){
+                            Strike ++;
+                            missCount = 0;
+                            System.out.println("your strike is up too " + Strike);
+                            if (Strike == 3){
+                                gameOver = true;
+                            }
+                        }
+
+                    }
+                    if (hit == true){
+                        missCount = 0;
+                    }
+                    System.out.println("your miss amount is " + missCount);
+                    System.out.println("your Stike total is " + Strike);
+                    //add to hit total
+                    //add to stick total
+                    display();
+
+                }while(!finshMove);
+
+
+
+            }while(!gameOver);
+
+
+        }while(done);
     }
 
     private static void ClearBoard() {
@@ -38,6 +82,8 @@ public class Main {
 
     private static void display() {
 // making the board
+        String miss = "\uD83D\uDCA7";
+        String hit = "\uD83D\uDD25";
         String wave = "\uD83C\uDF0A";
         String boat = "\u26F5";
         System.out.print("     ");
@@ -75,11 +121,18 @@ public class Main {
             //doing the emojis
             for (int col = 0; col < COL; col++) {
 
-                if (board[row][col].equals("-")){
-                    System.out.print(wave+ " ");
+                //checking if the guess hit a boat
+                if (board[row][col].equals("hit")) {
+                    System.out.print(hit+ " ");
+
                 }
-                else {
-                    System.out.print(boat+ " ");
+                //checking to see if miss
+                else if (board[row][col].equals("miss")) {
+                    System.out.print(miss + " ");
+                }
+                //means youve alr gone in this space
+                else{
+                    System.out.print(wave+ " ");
                 }
 
 
@@ -88,7 +141,90 @@ public class Main {
 
         }
     }
+   private static boolean playerMove(){
+        boolean isHit;
+        int row;
+        String alphaCol = "";
+       Scanner in = new Scanner (System.in);
+       do{
+            //asking for input on row
+           System.out.println("whats your move?");
+          row = safeInput.getRangedInt(in,"Row:", 1, 10);
+          row --;
+          //asking input for column
+          System.out.println("whats your column move?");
+          alphaCol = safeInput.getRegExString(in, "Col: ", "[AaBbCcDdEeFfGgHhIiJj]");
+          alphaCol = alphaCol.toUpperCase();
+          int col =0;
+          //turning the horzontal letters in to numbers
+          switch (alphaCol) {
+              case "A":
+                  col = 0;
+                  break;
+              case "B":
+                  col = 1;
+                  break;
+              case "C":
+                  col = 2;
+                  break;
+              case "D":
+                  col = 3;
+                  break;
+              case "E":
+                  col = 4;
+                  break;
+              case "F":
+                  col = 5;
+                  break;
+              case "G":
+                  col = 6;
+                  break;
+              case "H":
+                  col = 7;
+                  break;
+              case "I":
+                  col = 8;
+                  break;
+              case "J":
+                  col = 9;
+                  break;
+          }
+          if (board[row][col].equals("-")){
+              board[row][col] = "miss";
+              System.out.println("Thats was a miss");
+              isHit = false;
+              return isHit;
 
+          }
+          else if (board[row][col].equals("ship")){
+              board[row][col] = "hit";
+              System.out.println("Thats was a Hit");
+              isHit = true;
+              return isHit;
+
+          }
+          else {
+              System.out.println("something has already happened in that spot");
+          }
+
+       }while(true);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   }
 
     private static void placeShip(int ship) {
         //placing the ships
@@ -106,7 +242,7 @@ public class Main {
                 validCounter = 0;
                 row = rnd.nextInt(10 - ship);
                 col = rnd.nextInt(10 - ship + 1);
-                System.out.println("Verticaly placing boat" + ship + " in postion " + row + " " + col);
+                System.out.println("Verticaly placing boat " + ship + " in postion " + row + " " + col);
                 for (int i = 0; i <= ship; i++) {
                     if (board[row + i][col].equals("-")) {
                         validCounter++;
