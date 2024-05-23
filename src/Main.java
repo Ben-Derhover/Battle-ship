@@ -21,8 +21,10 @@ public class Main {
             boolean hit;
             int missCount = 0;
             int Strike = 0;
+            int hitCount = 0;
             ClearBoard();
             do {
+                //placing the ships on the display
                 placeShip(1);
                 placeShip(2);
                 placeShip(3);
@@ -33,22 +35,32 @@ public class Main {
                 do {
                     hit = playerMove();
                     System.out.println(hit);
-
+                    //setting a hit to the playermove action
                     if (hit == false){
+                        //if you miss it add one to the misscount
                         missCount ++;
                         if (missCount == 5){
+                            //checks to see if misscount is 3 then adding 1 strike
                             Strike ++;
                             missCount = 0;
                             System.out.println("your strike is up too " + Strike);
                             if (Strike == 3){
-                                gameOver = true;
+                                break;
+                                //once Strike reaches 3 then it breaks and ends the loop to end the game
                             }
                         }
 
                     }
                     if (hit == true){
                         missCount = 0;
+                        hitCount ++;
+                        //restests the miss amount then adds one to the hit counter
+                        if(hitCount == 14){
+                            //once the hit count reachs 14 (which is the total amount of ship amount) then it breaks and ends the game
+                            break;
+                        }
                     }
+                    //telling you what you miss amount and stike amount is after each play
                     System.out.println("your miss amount is " + missCount);
                     System.out.println("your Stike total is " + Strike);
                     //add to hit total
@@ -57,14 +69,33 @@ public class Main {
 
                 }while(!finshMove);
 
+                if(Strike == 3){
+                    //displaying the lose after reaching 3 strikes
+                    safeInput.prettyHeader("You lose");
+                    gameOver = true;
+                    Strike = 0;
+                    hitCount = 0;
+                    //resteting all Strikes and hits after gameover
+                } else if (hitCount==14) {
+                    //displaying the win after reaching 3 strikes
+                    safeInput.prettyHeader("you win");
+                    gameOver = true;
+                    Strike = 0;
+                    hitCount = 0;
+                    //resteting all Strikes and hits after gameover
+                }
 
 
             }while(!gameOver);
+
+            done = safeInput.getYNConfirm(in,"do you want to play again?");
 
 
         }while(done);
     }
 
+
+//just restating the board to all - after a game is over
     private static void ClearBoard() {
 
 
@@ -81,10 +112,11 @@ public class Main {
     }
 
     private static void display() {
-// making the board
-        String miss = "\uD83D\uDCA7";
-        String hit = "\uD83D\uDD25";
-        String wave = "\uD83C\uDF0A";
+        // making the board
+        // setting each varibale to an emjio
+        String miss = "\uD83D\uDCA7"; //water drop
+        String hit = "\uD83D\uDD25";  //fire
+        String wave = "\uD83C\uDF0A";   //wave
         String boat = "\u26F5";
         System.out.print("     ");
         System.out.print("\uFF21" + " "); //A
@@ -189,19 +221,20 @@ public class Main {
                   col = 9;
                   break;
           }
+          //checking to see if the thing that was choosen is a - or a ship if a ship
           if (board[row][col].equals("-")){
               board[row][col] = "miss";
               System.out.println("Thats was a miss");
               isHit = false;
               return isHit;
-
+                //sending the input back up to the gameplay loop that the hit as false and to add one to the miss counter
           }
           else if (board[row][col].equals("ship")){
               board[row][col] = "hit";
               System.out.println("Thats was a Hit");
               isHit = true;
               return isHit;
-
+              //sending the input back up to the gameplay loop that the hit as true and to add one to the hit counter
           }
           else {
               System.out.println("something has already happened in that spot");
@@ -229,7 +262,7 @@ public class Main {
     private static void placeShip(int ship) {
         //placing the ships
         Random rnd = new Random();
-
+        //random number to see if vertical or horzontal
         int vertOrHorz = rnd.nextInt(2);
 
         int validCounter = 0;
@@ -237,12 +270,17 @@ public class Main {
         int col = 0;
 
         if (vertOrHorz == 0) {
+            //seeing if its vertical or horazonal by 1 or 0
             //checking to see if you can move there
             do {
+                //making sure you can place a ship in that spot
                 validCounter = 0;
+                //random placement on ether side of the ship
                 row = rnd.nextInt(10 - ship);
                 col = rnd.nextInt(10 - ship + 1);
+                //telling me were there at so i can test can be removed
                 System.out.println("Verticaly placing boat " + ship + " in postion " + row + " " + col);
+                //were a ship is not at its placing a - symbol
                 for (int i = 0; i <= ship; i++) {
                     if (board[row + i][col].equals("-")) {
                         validCounter++;
@@ -250,7 +288,7 @@ public class Main {
                     }
                 }
             } while (validCounter != (ship + 1));
-
+            //were a ship is decided to place it puts string word
             for (int i = 0; i <= ship; i++) {
                 board[row + i][col] = "ship";
 
@@ -262,15 +300,17 @@ public class Main {
                 validCounter = 0;
                 row = rnd.nextInt(10 - ship + 1);
                 col = rnd.nextInt(10 - ship);
-                System.out.println("Horazonaily placing boat" + ship + " in postion " + row + "" + col);
-
+                //random placement on ether side of the ship
+                System.out.println("Horazonaily placing boat " + ship + " in postion " + row + " " + col);
+                //were a ship is not at its placing a - symbol
+                //if its placed then add 1 to vaild counter
                 for (int i = 0; i <= ship; i++) {
                     if (board[row][col + i].equals("-")) {
                         validCounter++;
                     }
                 }
 
-
+                //were a ship is decided to place it puts string word
             } while (validCounter != (ship + 1));
             for (int i = 0; i <= ship; i++) {
                 board[row][col + i] = "ship";
